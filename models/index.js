@@ -1,9 +1,9 @@
 const {Sequelize} = require("sequelize"); //extrae las funciones de Sequelize para configurar la base de datos
 const parameters = require("../config/config");//guarda los parametros de la configuración
 
-//creamos el objeto de conexión con la base de datos
+//crea el objeto de conexión con la base de datos, pasandole los parametros creados en el archvo config.js
 const sequelize = new Sequelize(
-    parameters.database,
+    parameters.database,  
     parameters.username,
     parameters.password,
     {

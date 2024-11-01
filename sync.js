@@ -8,3 +8,5 @@ db.sequelize.sync({force: true}) //force: true lo que hace es resetear los regis
     .catch((error) => {
         console.error("Falló la sincro", error);
     })
+
+    
