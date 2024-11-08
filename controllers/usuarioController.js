@@ -1,3 +1,4 @@
+const { password } = require("../config/config");
 const db = require("../models"); //importamos los archivos del modelo
 const Usuario = db.usuario // se crea el objeto usuario para tener acceso al modelo del ORM para interactuar con la base de datos
 
@@ -10,7 +11,9 @@ const home = (req, res) =>{
 //funcion para listar todos los usuarios en la base de datos
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
-        const listaUsuarios = await Usuario.findAll(); //selecciona todos los usuarios de la db y los coloca en la constante
+        const listaUsuarios = await Usuario.findAll({
+            attributes: {exclude: ['password']} //excluimos la contraseña en la lista que guarda los usuarios
+        }); 
         if (listaUsuarios.length > 0){
             res.status(200).send(listaUsuarios); //devuelve la lista como respuesta
         }else{
