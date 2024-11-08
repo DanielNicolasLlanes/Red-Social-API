@@ -23,11 +23,15 @@ const list = async (req, res) => {  //async indica que la función devuelve una 
 //funcion para crear un usuario
 const create = async (req, res) => {
     try {
-        const {nombre, nickname, mail, password} = req.body;
+        const {nombre, nickname, mail, password} = req.body; //extrae y guarda los datos del body
+        if (!nombre || !nickname || !mail || !password) {    //se validan los datos ingresados:
+            return res.status(400).send({ message: "Todos los campos son obligatorios" });
+        }
+        //se crea el usuario
         const usuario = await Usuario.create({nombre, nickname, mail, password});
-        res.status(201).send(usuario);
+        res.status(201).send(usuario); //devuelve el usuario como respuesta exitosa
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(500).send( {message: "Error al crear usuario", error: error.message});
     }
 }
 

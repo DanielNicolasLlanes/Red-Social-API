@@ -9,7 +9,7 @@ const Usuario = (sequelize, Sequelize) => {
         mail: {
             type: Sequelize.STRING,
             allowNull: false,
-            unique: true,          //indica que para cada registro, este valor tiene que ser único, no debe repetirse ni compartirse con otro registro
+            unique: true,      //indica que para cada registro, este valor tiene que ser único, no debe repetirse ni compartirse con otro registro
         },
         nickname: {
             type: Sequelize.STRING,
