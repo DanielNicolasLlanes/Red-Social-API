@@ -6,6 +6,7 @@ const usuarioRouter = require("./routes/usuarioRoutes");//importamos las rutas d
 
 
 app.use(bodyParser.json());//se configura para que todas las respuestas sean dadas en formato json
+app.use(express.urlencoded({ extended: true }));//se configura para parsear los datos de formulario desde postman
 app.use("/api/usuarios", usuarioRouter);//configura la ruta principal y usa las rutas de usuario
 
 app.listen(PORT, () => {
