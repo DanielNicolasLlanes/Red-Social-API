@@ -29,5 +29,6 @@ const create = async (req, res) => {
 //exportamos las funciones del controlador, para poder crear los endpoints en las rutas:
 module.exports = {
     home,
-    list
+    list,
+    create
 }

@@ -4,9 +4,10 @@ const router = express.Router(); //importamos la utilidad de express que nos per
 const usuarioController = require("../controllers/usuarioController")
 
 
-//se crea la ruta principal de usuario, llama a home que indica que función del controlador será utilizada:
+//se crean los endpoints, con el metodo http correspondiente, el nombre de la ruta y el controlador asociado a cada una
 router.get("/", usuarioController.home);
 router.get("/list", usuarioController.list);
+router.post("create", usuarioController.create);
 
 module.exports = router; //indicamos que el recurso router este disponible desde fuera del archivos
 
