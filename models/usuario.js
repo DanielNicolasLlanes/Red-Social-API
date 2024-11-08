@@ -25,22 +25,29 @@ const Usuario = (sequelize, Sequelize) => {
             allowNull: true,
         },
     }, {
+        //esto hace que se agreguen automáticamente los campos createdAt y updatedAt a la tabla:
         timestamps: true,
-        /*
+        //createdAt registra la fecha y hora en que se creó el registro.
+        //updatedAt se actualiza automáticamente cada vez que se modifica el registro
+        
         hooks: {
+            //se ejecuta antes de que un nuevo usuario se guarde en la base de datos:
             beforeCreate: async(Usuario) => {
-                if (Usuario.password) {
+                if (Usuario.password) {   //verifica que el usuario tenga una contraseña
+                    //se crea una "sal" (cadena aleatoria) que se agrega a la contraseña antes de encriptarla
                     const salt = await bcrypt.genSalt(10);
-                    Usuario.password = await bcrypt.hash(Usuario.password, salt);
+                    //se encripta la contraseña, y se une con la sal generada  
+                    Usuario.password = await bcrypt.hash(Usuario.password, salt); //se asigna la contraseña encriptada al usuario
                 }
             },
+            //se ejecuta antes de actualizar un registro de usuario:
             beforeUpdate: async(Usuario) => {
-                if (Usuario.changed("password")) {
-                    const salt = await bcrypt.genSalt(10);
-                    Usuario.password = await bcrypt.hash(Usuario.password, salt);
+                if (Usuario.changed("password")) { // Comprueba si el campo password ha cambiado
+                    const salt = await bcrypt.genSalt(10); // Si detecta un cambio, genera una nueva sal
+                    Usuario.password = await bcrypt.hash(Usuario.password, salt); //cifra la nueva contraseña y la asigna al usuario
                 }
             },
-        },*/
+        },
     })
 }
 
