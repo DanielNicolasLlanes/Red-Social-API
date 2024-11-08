@@ -40,10 +40,10 @@ const create = async (req, res) => {
     }
 }
 //funcion para encontrar un usuario por id
-const findById = async (req, res) => {
+const findById = async(req, res) => {
     try {
-        const usuario = Usuario.findByPk(req.params.id); //se le pasa la funcion del ORM el id en los parametros del req
-        if (persona){
+        const usuario = await Usuario.findByPk(req.params.id); //se le pasa la funcion del ORM el id en los parametros del req
+        if (usuario){
             res.status(200).send(usuario);
         }else{
             res.status(404).send({message: "Not found"});
