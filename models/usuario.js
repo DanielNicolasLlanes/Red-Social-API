@@ -1,3 +1,5 @@
+const bcryptjs  = require("bcryptjs"); // se importa bcrypt, que es una librería para cifrar las contraseñas
+
 //se crea una funcion para el usuario, con dos parametros, uno el objeto de conexion y otro para configurar Sequelize
 const Usuario = (sequelize, Sequelize) => {
     return sequelize.define("Usuario",{   //primero define como se llamara el modelo, al cual al final le agrega una "s"
@@ -35,16 +37,16 @@ const Usuario = (sequelize, Sequelize) => {
             beforeCreate: async(Usuario) => {
                 if (Usuario.password) {   //verifica que el usuario tenga una contraseña
                     //se crea una "sal" (cadena aleatoria) que se agrega a la contraseña antes de encriptarla
-                    const salt = await bcrypt.genSalt(10);
+                    const salt = await bcryptjs.genSalt(10);
                     //se encripta la contraseña, y se une con la sal generada  
-                    Usuario.password = await bcrypt.hash(Usuario.password, salt); //se asigna la contraseña encriptada al usuario
+                    Usuario.password = await bcryptjs.hash(Usuario.password, salt); //se asigna la contraseña encriptada al usuario
                 }
             },
             //se ejecuta antes de actualizar un registro de usuario:
             beforeUpdate: async(Usuario) => {
                 if (Usuario.changed("password")) { // Comprueba si el campo password ha cambiado
-                    const salt = await bcrypt.genSalt(10); // Si detecta un cambio, genera una nueva sal
-                    Usuario.password = await bcrypt.hash(Usuario.password, salt); //cifra la nueva contraseña y la asigna al usuario
+                    const salt = await bcryptjs.genSalt(10); // Si detecta un cambio, genera una nueva sal
+                    Usuario.password = await bcryptjs.hash(Usuario.password, salt); //cifra la nueva contraseña y la asigna al usuario
                 }
             },
         },
