@@ -1,7 +1,7 @@
 const db = require("../models"); //importamos los archivos del modelo
 const Usuario = db.usuario // se crea el objeto usuario para tener acceso al modelo del ORM para interactuar con la base de datos
 
-//define el controlador de la ruta principal
+//funcion para la ruta principal de usuario
 const home = (req, res) =>{
     res.status(200).send("ruta principal de usuario");
 };
@@ -11,7 +11,7 @@ const home = (req, res) =>{
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
         const listaUsuarios = await Usuario.findAll(); //selecciona todos los usuarios de la db y los coloca en la constante
-        if (listaUsuarios > 0){
+        if (listaUsuarios.length > 0){
             res.status(200).send(listaUsuarios); //devuelve la lista como respuesta
         }else{
             res.status(404).send({ message: "Aún no hay registros" })
@@ -32,13 +32,32 @@ const create = async (req, res) => {
         const usuario = await Usuario.create({nombre, nickname, mail, password});
         res.status(201).send(usuario); //devuelve el usuario como respuesta exitosa
     } catch (error) {
-        res.status(500).send( {message: "Error al crear usuario", error: error.message});
+        if (error.name === "SequelizeUniqueConstraintError"){
+            res.status(400).send({message: "Mail ya existente"});
+        }else{
+        res.status(500).send( {message: error.message, nombre: error.name});
+        }
     }
 }
+//funcion para encontrar un usuario por id
+const findById = async (req, res) => {
+    try {
+        const usuario = Usuario.findByPk(req.params.id); //se le pasa la funcion del ORM el id en los parametros del req
+        if (persona){
+            res.status(200).send(usuario);
+        }else{
+            res.status(404).send({message: "Not found"});
+        }
+    } catch (error) {
+        res.status(500).send({message: "Error interno del servidor"});
+    }
+}
+
 
 //exportamos las funciones del controlador, para poder crear los endpoints en las rutas:
 module.exports = {
     home,
     list,
-    create
+    create,
+    findById
 }

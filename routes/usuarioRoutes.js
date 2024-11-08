@@ -8,6 +8,7 @@ const usuarioController = require("../controllers/usuarioController")
 router.get("/", usuarioController.home);
 router.get("/list", usuarioController.list);
 router.post("/create", usuarioController.create);
+router.get("/info/:id", usuarioController.findById); //Se le pasa por parametro el id del usuario a buscar
 
 module.exports = router; //indicamos que el recurso router este disponible desde fuera del archivos
 
