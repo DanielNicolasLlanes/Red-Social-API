@@ -11,7 +11,11 @@ const home = (req, res) =>{
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
         const listaUsuarios = await Usuario.findAll(); //selecciona todos los usuarios de la db y los coloca en la constante
-        res.status(200).send(listaUsuarios); //devuelve la lista como respuesta
+        if (listaUsuarios > 0){
+            res.status(200).send(listaUsuarios); //devuelve la lista como respuesta
+        }else{
+            res.status(404).send({ message: "Aún no hay registros" })
+        }
     } catch (error) {
         res.status(500).send(error.message);
     }
