@@ -23,7 +23,8 @@ const list = async (req, res) => {  //async indica que la función devuelve una 
 //funcion para crear un usuario
 const create = async (req, res) => {
     try {
-        const usuario = await Usuario.create(req.body);
+        const {nombre, nickname, mail, password} = req.body;
+        const usuario = await Usuario.create({nombre, nickname, mail, password});
         res.status(201).send(usuario);
     } catch (error) {
         res.status(500).send(error.message);
