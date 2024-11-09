@@ -12,11 +12,17 @@ const sequelize = new Sequelize(
     }
 );
 
-const db = {};
+const db = {}; //crea la base de datos
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.usuario = require("./usuario")(sequelize, Sequelize);
+db.Usuario = require("./usuario")(sequelize, Sequelize); //carga el modelo usuario
+db.Post = require("./post")(sequelize, Sequelize); //carga el modelo post
+
+// Relaciones entre modelo Usuario y Post
+db.Usuario.hasMany(db.Post, { foreignKey: 'id_usuario' }); //indica que un usuario puede tener muchos posts
+db.Post.belongsTo(db.Usuario, { foreignKey: 'id_usuario' }); //indica que muchos posts pueden pertenecer solo a un usuario
+
 
 module.exports = db;//exportamos la base de datos
