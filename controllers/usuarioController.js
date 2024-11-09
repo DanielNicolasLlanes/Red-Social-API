@@ -37,7 +37,7 @@ const register = async (req, res) => {
         res.status(201).send(usuario); //devuelve el usuario como respuesta exitosa
     } catch (error) {
         if (error.name === "SequelizeUniqueConstraintError"){
-            res.status(400).send({message: "Mail ya existente"});
+            res.status(400).send({message: "Mail o nickname ya existente"});
         }else{
         res.status(500).send( {message: error.message, nombre: error.name});
         }
@@ -57,11 +57,30 @@ const findById = async(req, res) => {
     }
 }
 
+//funcion para autenticar a un usuario mediante mail y password:
+const login = async(req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}
+
+//funcion para editar un usuario (requiere autenticación)
+const update = async(req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}
 
 //exportamos las funciones del controlador, para poder crear los endpoints en las rutas:
 module.exports = {
     home,
     list,
     register,
-    findById
+    findById,
+    login,
+    update
 }
