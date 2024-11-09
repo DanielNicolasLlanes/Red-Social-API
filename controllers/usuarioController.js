@@ -1,4 +1,5 @@
-const { password } = require("../config/config");
+//const { password } = require("../config/config");
+
 const db = require("../models"); //importamos los archivos del modelo
 const Usuario = db.usuario // se crea el objeto usuario para tener acceso al modelo del ORM para interactuar con la base de datos
 
@@ -24,7 +25,7 @@ const list = async (req, res) => {  //async indica que la función devuelve una 
     }
 }
 //funcion para crear un usuario
-const create = async (req, res) => {
+const register = async (req, res) => {
     try {
         const {nombre, nickname, mail, password} = req.body; //extrae y guarda los datos del body
     
@@ -61,6 +62,6 @@ const findById = async(req, res) => {
 module.exports = {
     home,
     list,
-    create,
+    register,
     findById
 }
