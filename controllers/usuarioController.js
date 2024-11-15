@@ -46,14 +46,14 @@ const register = async (req, res) => {
 //funcion para encontrar un usuario por id
 const findById = async(req, res) => {
     try {
-        const usuario = await Usuario.findByPk(req.params.id); //se le pasa la funcion del ORM el id en los parametros del req
+        const usuario = await Usuario.findByPk(req.params.id); //se pasa a la funcion del ORM el id en los parametros del req
         if (usuario){
-            res.status(200).send(usuario);
+            res.status(200).send(usuario); //si el usuario fue encontrado, respuesta 200 OK
         }else{
-            res.status(404).send({message: "Not found"});
+            res.status(404).send({message: "Not found"}); //de no existir usuario con ese id, respuesta 404 Not Found
         }
     } catch (error) {
-        res.status(500).send({message: "Error interno del servidor"});
+        res.status(500).send({message: "Error interno del servidor"});//si el try falla, error del servidor
     }
 }
 
