@@ -8,7 +8,6 @@ const home = (req, res) =>{
 
 
 //funcion para listar todos los usuarios registrados en la base de datos, por paginación
-
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
         const page = parseInt(req.query.page) || 1; //número de página, lo toma de request y por defecto es 1
