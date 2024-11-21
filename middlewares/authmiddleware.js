@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");//importamos el token
 
 const auth = (req, res, next) => { //toma next para ejecutar la proxima función
     const token = req.header("Authorization");
-
+    console.log("Token recibido:", token);//imprime el token
     //verifica si el token existe
     if (!token) {
         return res.status(401).send({ message: "No hay token" });

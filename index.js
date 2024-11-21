@@ -5,12 +5,14 @@ const PORT = 3000;
 
 const usuarioRouter = require("./routes/usuarioRoutes");//importamos las rutas de usuario en el index
 const authRouter = require("./routes/authRoutes");//importamos las rutas de auth
+const postRouter = require("./routes/postRoutes");//importamos las rutas de los posts
 
 app.use(bodyParser.json());//se configura para que todas las respuestas sean dadas en formato json
 app.use(express.urlencoded({ extended: true }));//se configura para parsear los datos de formulario desde postman
 
 app.use("/api/usuarios", usuarioRouter);//configura la ruta principal y usa las rutas de usuario
 app.use("/api/auth", authRouter);//configura la ruta principal para el login
+app.use("/api/posts", postRouter);//configura la ruta principal para los posts
 
 app.listen(PORT, () => {
     console.log("aplicacion corriendo")
