@@ -19,10 +19,27 @@ db.sequelize = sequelize;
 
 db.usuario = require("./usuario")(sequelize, Sequelize); //carga el modelo usuario
 db.Post = require("./post")(sequelize, Sequelize); //carga el modelo post
+db.Following = require("./following")(sequelize, Sequelize);//carga el modelo following
 
 // Relaciones entre modelo Usuario y Post
 db.usuario.hasMany(db.Post, { foreignKey: 'id_usuario' }); //indica que un usuario puede tener muchos posts
 db.Post.belongsTo(db.usuario, { foreignKey: 'id_usuario' }); //indica que muchos posts pueden pertenecer solo a un usuario
+
+// Relacion de SEGUIDOS:
+db.usuario.belongsToMany(db.usuario, { //un usuario puede seguir a muchos otros usuarios, y cada usuario puede ser seguido por varios otros
+    through: db.Following, //indica que esta relación se establece mediante la tabla intermedia Following
+    as: 'seguidos', //alias para acceder a los usuarios que este usuario sigue
+    foreignKey: 'id_usuario', //referencia al usuario que está siguiendo a otros
+    otherKey: 'id_usuario_seguido' //referencia a los usuarios que son seguidos
+});
+// Relacion de SEGUIDORES:
+db.usuario.belongsToMany(db.usuario, {
+    through: db.Following, //indica que esta relación se establece mediante la tabla intermedia Following
+    as: 'seguidores', //alias para acceder a los usuarios que siguen a este usuario
+    foreignKey: 'id_usuario_seguido', // Referencia al usuario que es seguido
+    otherKey: 'id_usuario' // Referencia al usuario que está siguiendo
+});
+
 
 
 module.exports = db;//exportamos la base de datos
