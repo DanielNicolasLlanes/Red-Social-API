@@ -1,5 +1,3 @@
-//const { password } = require("../config/config");
-
 const db = require("../models"); //importamos los archivos del modelo
 const Usuario = db.usuario // se crea el objeto usuario para tener acceso al modelo del ORM para interactuar con la base de datos
 
@@ -9,7 +7,8 @@ const home = (req, res) =>{
 };
 
 
-//funcion para listar todos los usuarios registrados en la base de datos
+//funcion para listar todos los usuarios registrados en la base de datos, por paginación
+
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
         const page = parseInt(req.query.page) || 1; //número de página, lo toma de request y por defecto es 1
@@ -74,7 +73,7 @@ const findById = async(req, res) => {
     }
 }
 
-//funcion para autenticar a un usuario mediante mail y password:
+/*
 const login = async(req, res) => {
     try {
         
@@ -82,6 +81,7 @@ const login = async(req, res) => {
         
     }
 }
+*/
 
 //funcion para editar un usuario (requiere autenticación)
 const update = async(req, res) => {
@@ -98,6 +98,5 @@ module.exports = {
     list,
     register,
     findById,
-    login,
     update
 }
