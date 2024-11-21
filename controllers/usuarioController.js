@@ -9,17 +9,34 @@ const home = (req, res) =>{
 };
 
 
-//funcion para listar todos los usuarios en la base de datos
+//funcion para listar todos los usuarios registrados en la base de datos
 const list = async (req, res) => {  //async indica que la función devuelve una promesa, ya que requiere de una interacción con la base de datos
     try {
-        const listaUsuarios = await Usuario.findAll({
-            attributes: {exclude: ['password']} //excluimos la contraseña en la lista que guarda los usuarios
-        }); 
-        if (listaUsuarios.length > 0){
-            res.status(200).send(listaUsuarios); //devuelve la lista como respuesta
-        }else{
-            res.status(404).send({ message: "Aún no hay registros" })
+        const page = parseInt(req.query.page) || 1; //número de página, lo toma de request y por defecto es 1
+        const limit = parseInt(req.query.limit) || 2; //establece que el límite de registro por pagina será de 2
+
+        if (page < 1 || limit < 1){ //agregamos una validación para que la página y el límite sean valores positivos
+            return res.status(400).send({message: "La página y el límite deben ser valores positivos"})
         }
+
+        //calculamos el desplazamiento en cada página, restando 1 a la página actual y multiplicandolo por el límite:
+        const offset = (page - 1) * limit;
+
+        const {count, rows} = await Usuario.findAndCountAll({ //guardamos el conteo de los registros y los registros en si
+            attributes: {exclude: ['password']},//excluimos la contraseña en la lista que guarda los usuarios
+            limit: limit, //indicamos que el límite tiene que ser el que establecimos
+            offset: offset//indicamos que el desplazamiento sea el que calculamos 
+        }); 
+
+        //enviamos la respuesta con los registros:
+        res.status(200).send({
+            totalItems: count, //la cantidad total de items o usuarios
+            totalPages: Math.ceil(count/limit),//la cantidad total de páginas
+            currentPage: page, //la página actual
+            itemsPerPage: limit, //la cantidad de usuarios que se presentan por página
+            data: rows //los registros
+        })
+
     } catch (error) {
         res.status(500).send(error.message);
     }

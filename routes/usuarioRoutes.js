@@ -5,9 +5,13 @@ const usuarioController = require("../controllers/usuarioController")
 
 
 //se crean los endpoints, con el metodo http correspondiente, el nombre de la ruta y el controlador asociado a cada una
-router.get("/", usuarioController.home);
-router.get("/list", usuarioController.list);
-router.post("/register", usuarioController.register);
+router.post("/register", usuarioController.register);//registra a un nuevo usuario
+router.get("/list", usuarioController.list);//lista a todos los usuarios registrados
+router.post("/login", usuarioController.login);//autentica a un usuario mediante mail y password
+router.put("/me", usuarioController.update);//permite al usuario editar su perfil (requiere autenticación)
+
+//adiciones:
+router.get("/", usuarioController.home);//ruta principal de usuario
 router.get("/info/:id", usuarioController.findById); //Se le pasa por parametro el id del usuario a buscar
 
 module.exports = router; //indicamos que el recurso router este disponible desde fuera del archivos
