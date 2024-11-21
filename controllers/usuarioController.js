@@ -73,24 +73,38 @@ const findById = async(req, res) => {
     }
 }
 
-/*
-const login = async(req, res) => {
-    try {
-        
-    } catch (error) {
-        
-    }
-}
-*/
 
 //funcion para editar un usuario (requiere autenticación)
 const update = async(req, res) => {
     try {
-        
+        //obtiene los datos del usuario autenticado desde el middleware
+        const userId = req.user.id;
+        //los datos a actualizar se envian en el body de la solicitud
+        const { nombre, nickname, mail, password } = req.body;
+
+        //busca el usuario por su id
+        const usuario = await Usuario.findByPk(userId);
+        if (!usuario) {//si no se encuentra manda error 404 Not Found
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        //actualiza los campos con lo enviado en el body, en caso no no haber proporcionado algún dato, se queda con el anterior
+        usuario.nombre = nombre || usuario.nombre;
+        usuario.nickname = nickname || usuario.nickname;
+        usuario.mail = mail || usuario.mail;
+
+        //solo actualiza la contraseña si fue proporcionada
+        if (password) {
+            usuario.password = password;
+        }
+
+        await usuario.save(); //Sequelize activará el hook `beforeUpdate` si es necesario
+        res.status(200).send(usuario);//envía el usuario como respuesta 200 
     } catch (error) {
-        
+        res.status(500).send({ error: error.message });
     }
-}
+};
+
 
 //exportamos las funciones del controlador, para poder crear los endpoints en las rutas:
 module.exports = {
