@@ -27,8 +27,41 @@ const createPost = async (req, res) => {
     }
 }
 
+//función para listar los posts de un usuario autenticado
+const getUserPosts = async (req, res) => {
+    try {
+        const userId = req.user.id; //obtiene el ID del usuario autenticado desde el middleware
+
+        //busca los posts del usuario autenticado
+        const posts = await Post.findAll({
+            where: { id_usuario: userId }, //filtra por el ID del usuario autenticado
+            include: {
+                model: db.usuario,
+                attributes: ["id", "nombre", "mail"], //incluye los datos básicos del usuario
+            },
+        });
+
+        //valida si el usuario no tiene posts
+        if (posts.length === 0) {//devolvemos error 404 Not Found
+            return res.status(404).send({ message: "No tienes posts creados" });
+        }
+
+        res.status(200).send(posts);
+    } catch (error) {
+        console.error("Error al obtener los posts del usuario autenticado:", error);
+        res.status(500).send({message: "Error interno del servidor",});
+    }
+};
+
+/*funcion para modificar un post de un usuario autenticado:
+const updatePost = async (req, res) = > {
+}
+*/
+
+
 
 module.exports = {
     home,
-    createPost
+    createPost,
+    getUserPosts
 }
