@@ -132,30 +132,35 @@ const followers = async (req, res) => {
 //función para listar a los usuarios con relación de seguimiento mutua (seguidor y seguido)
 const mutual = async (req, res) => {
     try {
-        const userId = req.user.id;//toma el id del usuario autenticado del middleware
-
-        //busca usuarios con seguimiento mutuo
-        const mutuals = await Usuario.findAll({//realizamos una consulta de todos los usuarios
-            include: { //incluye a los usuarios seguidos
-                model: Usuario,
-                as: "seguidos",
-                attributes: ["id", "nombre", "nickname", "mail"], //indica solo los campos necesarios
-                through: {
-                    where: { id_usuario: userId }, //indica que de los seguidos, busque donde el id sea el del usuario autenticado
-                },
-                include: { //incluye a los seguidores de los seguidos
-                    model: Usuario,
-                    as: "seguidores",
-                    attributes: [],//indica que no se muestre el atriburo de "seguidores"
-                    through: {
-                        where: { id_usuario_seguido: userId },//indica que de los seguidores, 
-                    },
-                },
-            },
-            where: { id: userId },//indicamos que de los usuarios, busque solo el que tiene id del usuario autenticado
+        const userId = req.user.id; // Obtener el ID del usuario autenticado desde el middleware
+        
+        // 1. Obtener los usuarios que el usuario autenticado sigue
+        const following = await Following.findAll({
+            where: { id_usuario: userId },
+            attributes: ['id_usuario_seguido'], // Solo obtener los IDs de los usuarios seguidos
         });
 
-        res.status(200).send(mutuals[0].seguidos); //accedemos al usuario resultante (mutuals[0]) y luego a los seguidos
+        // 2. Obtener los usuarios que siguen al usuario autenticado
+        const followers = await Following.findAll({
+            where: { id_usuario_seguido: userId },
+            attributes: ['id_usuario'], // Solo obtener los IDs de los usuarios que siguen
+        });
+
+        // 3. Intersección de ambas listas de IDs
+        const followingIds = following.map(f => f.id_usuario_seguido);
+        const followerIds = followers.map(f => f.id_usuario);
+
+        // Obtener la intersección de ambos arrays
+        const mutualIds = followingIds.filter(id => followerIds.includes(id));
+
+        // 4. Buscar los usuarios mutuos
+        const mutuals = await Usuario.findAll({
+            where: { id: mutualIds },
+            attributes: ["id", "nombre", "nickname", "mail"], // Puedes agregar o quitar atributos según lo necesites
+        });
+
+        // 5. Devolver los usuarios que son mutuos
+        res.status(200).send(mutuals);
 
     } catch (error) {
         console.error(error);
@@ -164,8 +169,8 @@ const mutual = async (req, res) => {
             error: error.message,
         });
     }
+};
 
-}
 
 module.exports = {
     createFollow,

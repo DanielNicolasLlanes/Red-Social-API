@@ -88,7 +88,7 @@ const login = async (req, res) => {
             id: usuario.id,
             nombre: usuario.nombre,
             mail: usuario.mail
-        }, "1234", { expiresIn: "1h" }); //añade la clave secreta y la expiración
+        }, "1234", { expiresIn: "180" }); //añade la clave secreta y la expiración
 
         //responde con el token:
         res.status(200).send({ 

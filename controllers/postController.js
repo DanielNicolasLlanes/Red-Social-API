@@ -9,9 +9,14 @@ const home = (req, res) =>{
     res.status(200).send("ruta principal de posts");
 };
 
+//funcion para crear un nuevo post
 const createPost = async (req, res) => {
     const {titulo, contenido} = req.body;
     
+    if (!titulo || !contenido) {
+        return res.status(400).send({message: "No puede haber campos vacíos"})
+    }
+
     try {
         //valida que el usuario esté autenticado (req.user viene del middleware)
         if (!req.user){
