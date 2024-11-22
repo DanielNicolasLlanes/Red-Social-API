@@ -7,10 +7,13 @@ const usuarioRouter = require("./routes/usuarioRoutes");//importamos las rutas d
 const authRouter = require("./routes/authRoutes");//importamos las rutas de auth
 const postRouter = require("./routes/postRoutes");//importamos las rutas de los posts
 const followingRouter = require("./routes/followingRoutes");//importamos las rutas de los followings
+const path  = require("path");
+
 
 app.use(bodyParser.json());//se configura para que todas las respuestas sean dadas en formato json
 app.use(express.urlencoded({ extended: true }));//se configura para parsear los datos de formulario desde postman
 
+app.use("/uploads", express.static(path.join(__dirname, 'uploads')));
 app.use("/api/usuarios", usuarioRouter);//configura la ruta principal y usa las rutas de usuario
 app.use("/api/auth", authRouter);//configura la ruta principal para el login
 app.use("/api/posts", postRouter);//configura la ruta principal para los posts

@@ -80,6 +80,10 @@ const update = async(req, res) => {
         const userId = req.user.id;
         //los datos a actualizar se envian en el body de la solicitud
         const { nombre, nickname, mail, password } = req.body;
+        let avatarPath = null;
+        if (req.file){
+            avatarPath = `uploads/avatars/${req.file.filename}`
+        }
 
         //busca el usuario por su id
         const usuario = await Usuario.findByPk(userId);
@@ -91,6 +95,9 @@ const update = async(req, res) => {
         usuario.nombre = nombre || usuario.nombre;
         usuario.nickname = nickname || usuario.nickname;
         usuario.mail = mail || usuario.mail;
+        if (avatarPath) {
+            usuario.avatar = avatarPath;
+        }
 
         //solo actualiza la contraseña si fue proporcionada
         if (password) {
@@ -98,6 +105,7 @@ const update = async(req, res) => {
         }
 
         await usuario.save(); //Sequelize activará el hook `beforeUpdate` si es necesario
+        
         res.status(200).send(usuario);//envía el usuario como respuesta 200 
     } catch (error) {
         res.status(500).send({ error: error.message });
