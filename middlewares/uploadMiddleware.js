@@ -2,7 +2,7 @@ const multer = require('multer');
 const path = require('path');
 
 //configuracion del almacenamiento con multer
-const storage = multer.diskStorage;({
+const storage = multer.diskStorage({
     //toma la solicitud, el archivo y una función callback
     destination: function(req, file, cb) {
         cb(null, 'uploads/avatars');// carpeta donde se guardan las imagenes
