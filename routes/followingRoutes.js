@@ -7,5 +7,7 @@ const auth = require("../middlewares/authmiddleware"); //middleware de autentica
 router.post("/follow", auth, followingController.createFollow);//seguir a un nuevo usuario
 router.delete("/unfollow", auth, followingController.unfollow);//eliminar una relación de seguimiento
 router.get("/followed", auth, followingController.followed);//lista todos los usuarios que un usuario autenticado sigue
+router.get("/followers", auth, followingController.followers);//lista todos los seguidores que un usuario autenticado tiene
+router.get("/mutual", auth, followingController.mutual);//lista los usuarios con seguimiento mutuo
 
 module.exports = router;

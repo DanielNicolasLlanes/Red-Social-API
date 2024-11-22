@@ -65,7 +65,7 @@ const updatePost = async (req, res) => {
         //busca el post por el id
         const post = await Post.findByPk(req.params.id);
         if (!post){//si no encuentra el post por id lanza error 404 Not Found
-            res.status(404).send({message: "Post no encontrado"})
+            return res.status(404).send({message: "Post no encontrado"})
         }
         //validamos que el post encontrado sea el del usuario autenticado
         if (post.id_usuario !== userId){
@@ -95,17 +95,17 @@ const deletePost = async (req, res) => {
         //busca en la base de datos el post por su id
         const post = await Post.findByPk(postId);
         if (!post) {//valida si la busqueda fue exitosa, de lo contrario devuelve error 404 Not Found
-            res.status(404).send({message: "Post no encontrado"});
+            return res.status(404).send({message: "Post no encontrado"});
         }
         //verifica que el post a eliminar sea del usuario autenticado
         if (post.id_usuario !== userId) {
-            res.status(403).send({message: "No autorizado para eliminar este post"});
+            return res.status(403).send({message: "No autorizado para eliminar este post"});
         }
         const postDestroy = await Post.destroy({
             where: {id: postId}
         });
         if (postDestroy) {
-            res.status(200).send({ message: "Post eliminado exitosamente" });  
+            return res.status(200).send({ message: "Post eliminado exitosamente" });  
     }else{
         res.status(404).send({message: "Post no encontrado"});
     }

@@ -21,11 +21,11 @@ const createFollow = async (req, res) => {
             return res.status(404).send({ message: "El usuario no existe" });
         }
 
-        res.status(201).send({ message: "Has comenzado a seguir al usuario", usuario: usuario, });//devuelve un mensaje con el usuario seguido
+        return res.status(201).send({ message: "Has comenzado a seguir al usuario", usuario: usuario, });//devuelve un mensaje con el usuario seguido
 
     } catch (error) {
         if(error.name === "SequelizeUniqueConstraintError"){
-            res.status(401).send({message: "Ya sigues a este usuario"});
+            return res.status(401).send({message: "Ya sigues a este usuario"});
         }
         else{
             res.status(500).send({ 
@@ -70,41 +70,107 @@ const unfollow = async (req, res) => {
                 id_usuario_seguido,//el ID del usuario a ser eliminado
             },
         });
-        res.status(200).send({ message: "Has dejado de seguir al usuario", usuario:usuario });
+        return res.status(200).send({ message: "Has dejado de seguir al usuario", usuario:usuario });
         
     } catch (error) {
         res.status(500).send({message: "Error interno del servidor"});
     }
 }
 
-//función para listar los usuarios que sigo
+//función para listar los usuarios que sigue un usuario autenticado
 const followed = async (req, res) => {
     try {
         const userId = req.user.id//toma el id del usuario autenticado del middleware
     
         const usuario = await Usuario.findByPk(userId, {
             include: [{
-                model: Usuario,//incluye los detalles del usuario seguido
+                model: Usuario,
                 as: "seguidos", //el alias definido en las relaciones
                 attributes: ["id", "nombre","nickname", "mail"], //selecciona los datos básicos del usuario
             }]    
         })
-        if (!usuario) {
-            res.status(404).send({message: "Usuario no encontrado"});
+        if (!usuario) {//si el usuario no fue encontrado devuelve error 404 Not Found
+            return res.status(404).send({message: "Usuario no encontrado"});
         }
 
-        if (usuario.seguidos.length === 0) {
-            res.status(404).send({message: "No sigues a ningún usuario"})
+        if (usuario.seguidos.length === 0) { //si no sigue a ningún otro usuario devuelve error 404 Not Found
+            return res.status(404).send({message: "No sigues a ningún usuario"})
         }
-
-        res.status(200).send(usuario.seguidos);
+        //En caso de respuesta exitosa devuelve la lista de usuarios seguidos
+        return res.status(200).send(usuario.seguidos);
     } catch (error) {
         res.status(500).send({message: "Error interno del servidor"});
     }
 }
 
+//funcion para listar los usuarios que siguen a un usuario autenticado
+const followers = async (req, res) => {
+    try {
+        const userId = req.user.id//toma el id del usuario autenticado del middleware
+
+        const usuario = await Usuario.findByPk(userId, { //busca en la base de datos el usuario con el id
+            include: [{
+                model: Usuario,
+                as: "seguidores", //el alias definido en las relaciones
+                attributes: ["id", "nombre","nickname", "mail"], //selecciona los datos básicos del usuario
+            }]
+        })
+        if (!usuario) {//si no encuentra al usuario devuelve error 404 Not Found
+            return res.status(404).send({message: "Usuario no encontrado"});
+        }
+        if (usuario.seguidores.length === 0) {//si el usuario no tiene seguidores devuelve error 404 Not Found
+            return res.status(404).send({message: "No tienes ningún seguidor"})
+        }
+        //Devuelve la lista de usuarios seguidos
+        return res.status(200).send(usuario.seguidores);
+
+    } catch (error) {
+        res.status(500).send({message: "Error interno del servidor"})
+    }
+}
+
+//función para listar a los usuarios con relación de seguimiento mutua (seguidor y seguido)
+const mutual = async (req, res) => {
+    try {
+        const userId = req.user.id;//toma el id del usuario autenticado del middleware
+
+        //busca usuarios con seguimiento mutuo
+        const mutuals = await Usuario.findAll({//realizamos una consulta de todos los usuarios
+            include: { //incluye a los usuarios seguidos
+                model: Usuario,
+                as: "seguidos",
+                attributes: ["id", "nombre", "nickname", "mail"], //indica solo los campos necesarios
+                through: {
+                    where: { id_usuario: userId }, //indica que de los seguidos, busque donde el id sea el del usuario autenticado
+                },
+                include: { //incluye a los seguidores de los seguidos
+                    model: Usuario,
+                    as: "seguidores",
+                    attributes: [],//indica que no se muestre el atriburo de "seguidores"
+                    through: {
+                        where: { id_usuario_seguido: userId },//indica que de los seguidores, 
+                    },
+                },
+            },
+            where: { id: userId },//indicamos que de los usuarios, busque solo el que tiene id del usuario autenticado
+        });
+
+        res.status(200).send(mutuals[0].seguidos); //accedemos al usuario resultante (mutuals[0]) y luego a los seguidos
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({
+            message: "Error interno del servidor",
+            error: error.message,
+        });
+    }
+
+}
+
 module.exports = {
     createFollow,
     unfollow,
-    followed
+    followed,
+    followers,
+    mutual
 }
