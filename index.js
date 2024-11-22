@@ -3,6 +3,9 @@ const bodyParser = require("body-parser"); //se importa el paquete de body parse
 const app = express() //se crea la aplicación de express
 const PORT = 3000;
 
+require('dotenv').config();
+
+
 const usuarioRouter = require("./routes/usuarioRoutes");//importamos las rutas de usuario en el index
 //const authRouter = require("./routes/authRoutes");//importamos las rutas de auth
 const postRouter = require("./routes/postRoutes");//importamos las rutas de los posts

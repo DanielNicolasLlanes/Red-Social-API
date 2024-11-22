@@ -9,7 +9,7 @@ const auth = (req, res, next) => { //toma next para ejecutar la proxima función
 
     try {
         //decodifica el token
-        const verified = jwt.verify(token, "1234"); //usa la funcion de jwt para verificar el token
+        const verified = jwt.verify(token, process.env.JWT_SECRET); //usa la funcion de jwt para verificar el token
         req.user = verified; //agregar la información del usuario al objeto `req`
         next(); // Pasar al siguiente middleware o controlador
     } catch (error) {
