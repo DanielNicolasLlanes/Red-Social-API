@@ -1,6 +1,8 @@
 
 const db = require("../models"); //importamos los archivos del modelo
+const Usuario = db.usuario;
 const Post = db.Post // se crea el objeto Post para tener acceso al modelo del ORM para interactuar con la base de datos
+const Following = db.Following // se crea el objeto Following para tener acceso al modelo
 
 //funcion para la ruta principal de post
 const home = (req, res) =>{
@@ -28,7 +30,7 @@ const createPost = async (req, res) => {
 }
 
 //función para listar los posts de un usuario autenticado
-const getUserPosts = async (req, res) => {
+const getPosts = async (req, res) => {
     try {
         const userId = req.user.id; //obtiene el ID del usuario autenticado desde el middleware
 
@@ -113,12 +115,97 @@ const deletePost = async (req, res) => {
         res.status(500).send({message: "error interno del servidor"});
     }}
 
+//funcion para acceder a un post por id, de un usuario autenticado o de un usuario seguido
+const getUserPost = async (req, res) => {
+    try {
+        const userId = req.user.id; //guardamos el id del usuario autenticado desde le middleware
+        const postId = req.params.id; //guardamos el id del post desde el cuerpo de la solicitud
 
+        //busca el post con su autor por id
+        const post = await Post.findByPk(postId, {
+            include: [
+                {
+                    model: db.usuario,
+                    attributes: ['id', 'nombre', 'nickname', 'mail'],
+                }
+            ],
+        });
+
+        //verifica si el post existe
+        if (!post) {
+            return res.status(404).send({ message: "Post no encontrado" });
+        }
+
+        //verifica si el autor del post es el usuario autenticado
+        if (post.id_usuario === userId) {
+            return res.status(200).send(post);
+        }
+
+        //verifica si el usuario sigue al autor del post
+        const isFollowing = await Following.findOne({
+            where: {
+                id_usuario: userId,
+                id_usuario_seguido: post.id_usuario,
+            },
+        });
+        //verifica que el post que se intenta leer es de un usuario seguido
+        if (!isFollowing) {
+            return res.status(403).send({ message: "No tienes permiso para acceder a este post" });
+        }
+
+        return res.status(200).send(post);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ 
+            message: "Error interno del servidor", 
+            error: error.message 
+        });
+    }
+};
+
+//funcion para listar los posts de un usuario determinado (solo si se sigue a determinado usuario)
+const getPostFrom = async (req, res) => {
+    try {
+        const userId = req.user.id; //extrae el ID del usuario autenticado
+        const userIdPosts = req.params.id; //el ID del usuario del cual se quieren obtener los posts
+        
+        //comprueba que exista una relación de seguimiento desde el usuario que intenta acceder hacia el autor de los posts
+        const isFollowing = await Following.findOne({
+            where: {
+                id_usuario: userId,
+                id_usuario_seguido: userIdPosts,
+            },
+        });
+        //si no existe una relacion de seguimiento
+        if (!isFollowing && userId !== parseInt(userIdPosts)) {
+            return res.status(403).send({ message: "No tienes permiso para acceder a este post" });
+        }
+        //busca todos los post del autor
+        const posts = await Post.findAll({
+            where: { id_usuario: userIdPosts }, //filtra por el ID del usuario al que queremos acceder
+            include: {
+                model: db.usuario,
+                attributes: ["id", "nombre", "nickname", "mail"], //incluye datos básicos del usuario
+            },
+        });
+        //si el usuario no tiene posts devuelve error 404 Not Found
+        if (posts.length === 0) { 
+            return res.status(404).send({ message: "El usuario no tiene posts" });
+        }
+
+        return res.status(200).send(posts);
+    }
+     catch (error) {
+        res.status(500).send({message: "Error interno del servidor"});
+    }
+}
 
 module.exports = {
     home,
     createPost,
-    getUserPosts,
+    getPosts,
     updatePost,
-    deletePost
+    deletePost,
+    getUserPost,
+    getPostFrom
 }
