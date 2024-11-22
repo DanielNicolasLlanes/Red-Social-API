@@ -6,5 +6,6 @@ const auth = require("../middlewares/authmiddleware"); //middleware de autentica
 //se crean los endpoints, con el metodo http correspondiente, el nombre de la ruta y el controlador asociado a cada una
 router.post("/follow", auth, followingController.createFollow);//seguir a un nuevo usuario
 router.delete("/unfollow", auth, followingController.unfollow);//eliminar una relación de seguimiento
+router.get("/followed", auth, followingController.followed);//lista todos los usuarios que un usuario autenticado sigue
 
 module.exports = router;

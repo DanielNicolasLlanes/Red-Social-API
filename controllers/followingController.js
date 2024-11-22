@@ -77,7 +77,34 @@ const unfollow = async (req, res) => {
     }
 }
 
+//función para listar los usuarios que sigo
+const followed = async (req, res) => {
+    try {
+        const userId = req.user.id//toma el id del usuario autenticado del middleware
+    
+        const usuario = await Usuario.findByPk(userId, {
+            include: [{
+                model: Usuario,//incluye los detalles del usuario seguido
+                as: "seguidos", //el alias definido en las relaciones
+                attributes: ["id", "nombre","nickname", "mail"], //selecciona los datos básicos del usuario
+            }]    
+        })
+        if (!usuario) {
+            res.status(404).send({message: "Usuario no encontrado"});
+        }
+
+        if (usuario.seguidos.length === 0) {
+            res.status(404).send({message: "No sigues a ningún usuario"})
+        }
+
+        res.status(200).send(usuario.seguidos);
+    } catch (error) {
+        res.status(500).send({message: "Error interno del servidor"});
+    }
+}
+
 module.exports = {
     createFollow,
     unfollow,
+    followed
 }
